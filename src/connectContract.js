@@ -5,7 +5,7 @@ export let stakingContract;
 export let aaveContract;
 export let contract;
 
-const stakingContractAddress = "0x65F03823B22C474f7eA358f9f632869cb8F9C6b2";
+const stakingContractAddress = "0x3752d475315D96B9AF39740FdE5DD93e91aCBa4E";
 const stakingContractABI = [
 	{
 		"inputs": [
@@ -198,6 +198,31 @@ const stakingContractABI = [
 		"type": "function"
 	},
 	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "index",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "user",
+				"type": "address"
+			}
+		],
+		"name": "unstaked",
+		"type": "event"
+	},
+	{
 		"inputs": [],
 		"name": "Beps",
 		"outputs": [
@@ -374,6 +399,25 @@ const stakingContractABI = [
 	{
 		"inputs": [],
 		"name": "totalStaked",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "userTotalStake",
 		"outputs": [
 			{
 				"internalType": "uint256",
@@ -680,13 +724,8 @@ const aaveContractABI = [
 ]
 
 const connectContract= async ()=>{
-    // await window.ethereum.request({ method: 'eth_requestAccounts' });
-    // console.log("window.ethereum : ", window.ethereum);
-    // const provider =  new JsonRpcProvider("https://polygon-mumbai.g.alchemy.com/v2/9Fbx8zXOKb9PgWjHrp9YyBtThIIkB-Bh");
     const provider = new ethers.providers.Web3Provider(window.ethereum);
-    // const provider = new ethers.providers.AlchemyProvider(null, "9Fbx8zXOKb9PgWjHrp9YyBtThIIkB-Bh");
 	
-	console.log("provider : ", provider);
     const signer =  provider.getSigner()
     
     

@@ -9,7 +9,7 @@ const Community = () => {
     const showtx = async () =>{
         try{
             const tx = await stakingContract.getUserStake(address);
-            console.log("tx",tx);
+            
             const data = [];
             tx.forEach((item,index)=>{
                 var stakeDate = new Date(item.StakeTime*1000);
@@ -21,7 +21,7 @@ const Community = () => {
                     case 2: days = 65; break;
                     case 3: days = 90; break;
                 }
-                console.log("date",stakeDate.toUTCString());
+                
                 data.push({
                     duration: item.Duration.toString(),
                     days: days,
@@ -38,19 +38,19 @@ const Community = () => {
     }
 
     const handleClaim = (index) => async () =>{
-        console.log("index",index);
+        
         const stakeIndex = txData.length - index - 1;
         try{
             const tx = await stakingContract.DailyClaim(stakeIndex);
-            console.log("tx",tx);
+            
             const data = await tx.wait();
-            console.log("data",data);
+            
         }catch(err){
-            console.log(err);
+            alert(err.reason);
+            
         }
         
     }
-    console.log("tx data",txData)
     useEffect(()=>{
         showtx();
     },[isConnected,address])

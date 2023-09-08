@@ -5,12 +5,15 @@ import { useAccount, useContractWrite, usePrepareContractWrite } from "wagmi";
 import {stakingContract,aaveContract} from "../connectContract"
 import { ethers } from "ethers";
 const Hero = () => {
-  const [durationIndex, setDurationIndex] = useState("");
+  const [durationIndex, setDurationIndex] = useState();
   const [tokenAmount, setTokenAmount] = useState(0);
   const [isApproved, setIsApproved] = useState();
   const [txDone, setTxDone] = useState(false);
   const [loader, setLoader] = useState(false);
   const { address, isConnected } = useAccount();
+  const[totalStaked, setTotalStaked] = useState(0);
+  const [stakedAmount, setStakedAmount] = useState(0);
+  const [balance, setBalance] = useState(0);
   const approveAmount ="115792089237316195423570985008687907853269984665640564039457584007913129639935"
 
   const checkApproval = async () => {
@@ -29,7 +32,6 @@ const Hero = () => {
 
   useEffect(()=>{
     checkApproval();
-    console.log("isApproved : ", isApproved);
   },[tokenAmount, txDone, isConnected, address])
 
   
@@ -44,26 +46,26 @@ const Hero = () => {
               const data = await tx1.wait();
               setLoader(false);
               setTxDone(!txDone);
-              console.log("tx1 : ", data);
+              
             }catch(err){
               setLoader(false);
               alert(err.message||err||err.data);
-              console.log("err in tx1 : ", err.message||err||err.data);
+              
             }
           }
           else{
             try{
               setLoader(true);
-              if(durationIndex == undefined){alert("Please select duration"); return;}
+              if(durationIndex == undefined){setLoader(false); alert("Please select duration"); return;}
               const tx2 = await stakingContract.stakePool(ethers.utils.parseEther(tokenAmount), durationIndex);
               const data = await tx2.wait();
               setLoader(false);
               setTxDone(!txDone);
-              console.log("tx2 : ", data);
+              
             }catch(err){
               setLoader(false);
               alert(err.reason);
-              console.log("err in tx2 : ", err.message||err||err.data);
+              
             }
           }
         } catch (error) {
@@ -72,7 +74,7 @@ const Hero = () => {
         }
         else{
             alert("Please connect wallet");
-            console.log("Please connect wallet");
+            
         }
         
         
@@ -83,11 +85,32 @@ const Hero = () => {
       const balance = await aaveContract.balanceOf(address);
       setTokenAmount(ethers.utils.formatEther(balance));
     }catch(err){
-      console.log("err in handleMax : ", err);
+      console.log( err);
     }
   }
 
+  const getData = async () => {
+    try{
+      const balance = await aaveContract.balanceOf(address);
+      setBalance(Number(ethers.utils.formatEther(balance)).toFixed(2));
+      const staked = await stakingContract.userTotalStake(address);
+      setStakedAmount(Number(ethers.utils.formatEther(staked)).toFixed(2));
+      const total = await stakingContract.totalStaked();
+      setTotalStaked(Number(ethers.utils.formatEther(total)).toFixed(2));
+    }catch(err){
+      console.log("err in getData : ", err);
+    }
+  }
+  useEffect(()=>{
+    getData();
+  },[txDone,address,isConnected])
 
+  useEffect(()=>{
+    if(txDone){
+      window.location.reload();
+    }
+    
+  },[txDone])
 
   return (
     <>
@@ -278,27 +301,20 @@ const Hero = () => {
                     </div>
                     <div className="flex justify-between items-center m-1 w-full">
                       <div>Your staked</div>
-                      <div>0 AAVE</div>
+                      <div>{stakedAmount}</div>
                     </div>
                     <div className="flex justify-between items-center m-1 w-full">
                       <div>Your Balance</div>
-                      <div>0 AAVE</div>
+                      <div>{balance}</div>
                     </div>
                     <div className="flex justify-between items-center m-1 w-full">
                       <div>Total staked</div>
-                      <div>150980.8989</div>
+                      <div>{totalStaked}</div>
                     </div>
                   </div>
                   <br />
 
                   <button
-                    // onClick={() => {
-                    //   console.log("durationIndex: ", durationIndex);
-                    //   //   write?.({
-                    //   //     args: [StakingContract, 100],
-                    //   //     account: address,
-                    //   //   });
-                    // }}
                     disabled={loader}
                     onClick={handlesubmit}
                     className="sm:mt-2 mb-2 w-full inline-flex items-center justify-center whitespace-nowrap border-0 rounded-md px-5 py-2 sm:px-5 sm:py-5 3xl:py-4 4xl:py-5 text-sm sm:text-md  font-semibold text-white leading-5 shadow-sm  bg-gradient-to-r from-sky-600 to-fuchsia-600 hover:bg-blue-900"
