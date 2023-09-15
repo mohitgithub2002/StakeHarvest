@@ -1,6 +1,8 @@
 // const {ethers, JsonRpcProvider, AlchemyProvider,EtherscanProvider } = require("ethers")
 // import {ethers} from "ethers";
 import {ethers}from "ethers";
+import {UseEthersProvider} from "./provider"
+import {UseEthersSigner} from "./signer"
 export let stakingContract;
 export let aaveContract;
 export let contract;
@@ -725,13 +727,19 @@ const aaveContractABI = [
 
 const connectContract= async ()=>{
     const provider = new ethers.providers.Web3Provider(window.ethereum);
+	// const signer = provider.getSigner();
+
+	const wagmiProvider = UseEthersProvider()
 	
-    const signer =  provider.getSigner()
+	const signer = UseEthersSigner()
+	// console.log("wagmiProvider", wagmiProvider)
+	// console.log("wagmiSigner", signer)
+
     
     
     stakingContract = new ethers.Contract(stakingContractAddress, stakingContractABI, signer);
     aaveContract = new ethers.Contract(aaveContractAddress, aaveContractABI, signer);
-     
+    //  console.log("stakingContract", stakingContract)
 };
 
 export default connectContract;

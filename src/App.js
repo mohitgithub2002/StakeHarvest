@@ -3,7 +3,8 @@ import Header from "./components/Header";
 import Hero from "./components/Hero";
 import Community from "./components/Community";
 import Footer from "./components/Footer";
-
+import { EthereumProvider } from '@walletconnect/ethereum-provider'
+import {WalletConnectModal}from '@walletconnect/modal'
 import {
   EthereumClient,
   w3mConnectors,
@@ -11,12 +12,12 @@ import {
 } from "@web3modal/ethereum";
 import { Web3Modal } from "@web3modal/react";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
-import { arbitrum, mainnet, polygon } from "wagmi/chains";
+import { arbitrum, mainnet, polygon, polygonMumbai } from "wagmi/chains";
 import { useAccount, useDisconnect } from 'wagmi'
 import connectContract, {stackingContract, aaveContract} from "./connectContract";
-
-const chains = [arbitrum, mainnet, polygon];
 const projectId = "6b098530af4797b4b0dcb37e0534845a";
+
+const chains = [arbitrum, mainnet, polygon,polygonMumbai];
 
 const { publicClient } = configureChains(chains, [w3mProvider({ projectId })]);
 const wagmiConfig = createConfig({
@@ -27,8 +28,9 @@ const wagmiConfig = createConfig({
 const ethereumClient = new EthereumClient(wagmiConfig, chains);
 
 function App() {
-    
-  connectContract();
+  
+  
+  
   
 
   return (

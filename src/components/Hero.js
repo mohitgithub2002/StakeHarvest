@@ -2,9 +2,10 @@ import React, { useEffect, useState } from "react";
 import blockaudit from "../images/blockaudit.jpg";
 import { useAccount, useContractWrite, usePrepareContractWrite } from "wagmi";
 
-import {stakingContract,aaveContract} from "../connectContract"
+import connectContract,{stakingContract,aaveContract} from "../connectContract"
 import { ethers } from "ethers";
 const Hero = () => {
+  connectContract();
   const [durationIndex, setDurationIndex] = useState();
   const [tokenAmount, setTokenAmount] = useState(0);
   const [isApproved, setIsApproved] = useState();
@@ -83,6 +84,7 @@ const Hero = () => {
   const handleMax = async () => {
     try{
       const balance = await aaveContract.balanceOf(address);
+      console.log("balance : ", balance);
       setTokenAmount(ethers.utils.formatEther(balance));
     }catch(err){
       console.log( err);
@@ -103,7 +105,7 @@ const Hero = () => {
   }
   useEffect(()=>{
     getData();
-  },[txDone,address,isConnected])
+  },[txDone,address,isConnected,durationIndex])
 
   useEffect(()=>{
     if(txDone){
